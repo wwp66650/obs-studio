@@ -112,9 +112,9 @@ static bool load_vlc_funcs(void)
 	return true;
 }
 
-#ifdef _WIN32
 static bool load_libvlc_module(void)
 {
+#ifdef _WIN32
 	char    *path_utf8 = NULL;
 	wchar_t path[1024];
 	LSTATUS status;
@@ -140,10 +140,21 @@ static bool load_libvlc_module(void)
 	}
 
 	RegCloseKey(key);
+#else
+
+#ifdef __APPLE__
+#define LIBVLC_DIR "/Applications/VLC.app/Contents/MacOS/"
+#define LIBVLC_FILE LIBVLC_DIR "lib/libvlc.5.dylib"
+	setenv("VLC_PLUGIN_PATH", LIBVLC_DIR "plugins", false);
+#else
+#define LIBVLC_FILE "libvlc.5.so"
+#endif
+	libvlc_module = os_dlopen(LIBVLC_FILE);
+
+#endif
 
 	return libvlc_module != NULL;
 }
-#endif
 
 extern struct obs_source_info vlc_source_info;
 
