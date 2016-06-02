@@ -273,9 +273,8 @@ static void vlcs_destroy(void *data)
 static void *vlcs_video_lock(void *data, void **planes)
 {
 	struct vlc_source *c = data;
-	planes[0] = c->frame.data[0];
-	planes[1] = c->frame.data[1];
-	planes[2] = c->frame.data[2];
+	for (size_t i = 0; i < MAX_AV_PLANES && c->frame.data[i] != NULL; i++)
+		planes[i] = c->frame.data[i];
 	return NULL;
 }
 
