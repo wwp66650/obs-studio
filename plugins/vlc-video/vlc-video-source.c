@@ -76,7 +76,7 @@ static void free_files(struct darray *array)
 	da_free(files);
 }
 
-static inline chroma_is(const char *chroma, const char *val)
+static inline bool chroma_is(const char *chroma, const char *val)
 {
 	return *(uint32_t*)chroma == *(uint32_t*)val;
 }
@@ -283,6 +283,8 @@ static void vlcs_video_display(void *data, void *picture)
 	struct vlc_source *c = data;
 	c->frame.timestamp = (uint64_t)libvlc_clock_() * 1000ULL - time_start;
 	obs_source_output_video(c->source, &c->frame);
+
+	UNUSED_PARAMETER(picture);
 }
 
 static unsigned vlcs_video_format(void **p_data, char *chroma, unsigned *width,
@@ -463,6 +465,8 @@ static void vlcs_stopped(const struct libvlc_event_t *event, void *data)
 	struct vlc_source *c = data;
 	if (!c->loop)
 		obs_source_output_video(c->source, NULL);
+
+	UNUSED_PARAMETER(event);
 }
 
 static void *vlcs_create(obs_data_t *settings, obs_source_t *source)
@@ -505,6 +509,8 @@ static void *vlcs_create(obs_data_t *settings, obs_source_t *source)
 			vlcs_stopped, c);
 
 	obs_source_update(source, NULL);
+
+	UNUSED_PARAMETER(settings);
 	return c;
 
 error:
