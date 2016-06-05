@@ -401,7 +401,7 @@ static void AddComboItem(QComboBox *combo, obs_property_t *prop,
 		var = QVariant::fromValue<double>(val);
 
 	} else if (format == OBS_COMBO_FORMAT_STRING) {
-		var = obs_property_list_item_string(prop, idx);
+		var = QVariant::fromValue<size_t>(idx);
 	}
 
 	combo->addItem(QT_UTF8(name), var);
@@ -1518,6 +1518,7 @@ void WidgetInfo::ListChanged(const char *setting)
 	obs_combo_format format = obs_property_list_format(property);
 	obs_combo_type   type   = obs_property_list_type(property);
 	QVariant         data;
+	size_t           idx;
 
 	if (type == OBS_COMBO_TYPE_EDITABLE) {
 		data = combo->currentText();
@@ -1541,8 +1542,9 @@ void WidgetInfo::ListChanged(const char *setting)
 				data.value<double>());
 		break;
 	case OBS_COMBO_FORMAT_STRING:
+		idx = data.value<size_t>();
 		obs_data_set_string(view->settings, setting,
-				QT_TO_UTF8(data.toString()));
+				obs_property_list_item_string(property, idx));
 		break;
 	}
 }
